@@ -27,6 +27,7 @@ export type VoiceTranslationInput = z.infer<typeof VoiceTranslationInputSchema>;
 
 const VoiceTranslationOutputSchema = z.object({
   translatedAudioUri: z.string().describe('The translated audio data URI.'),
+  translatedText: z.string().describe('The translated text.'),
 });
 export type VoiceTranslationOutput = z.infer<typeof VoiceTranslationOutputSchema>;
 
@@ -51,11 +52,20 @@ const whisperTool = ai.defineTool(
   }
 );
 
+const TranslationResponseSchema = z.object({
+  translatedText: z.string().describe('The translated text.')
+});
+
 const voiceTranslationPrompt = ai.definePrompt({
   name: 'voiceTranslationPrompt',
   tools: [whisperTool],
-  input: {schema: VoiceTranslationInputSchema},
-  output: {schema: VoiceTranslationOutputSchema},
+  input: {schema: z.object({
+    sourceLanguage: VoiceTranslationInputSchema.shape.sourceLanguage,
+    targetLanguage: VoiceTranslationInputSchema.shape.targetLanguage,
+    audioDataUri: VoiceTranslationInputSchema.shape.audioDataUri,
+    whisperTranscriptionResult: z.string(),
+  })},
+  output: {schema: TranslationResponseSchema},
   prompt: `You are a real-time voice translator. A user will provide audio in {{{sourceLanguage}}} which you will translate to {{{targetLanguage}}}.
 
   The whisperTranscription tool has been called on the original audio.  Its output is:
@@ -65,7 +75,7 @@ const voiceTranslationPrompt = ai.definePrompt({
   
   You MUST return the output in the following JSON format:
   {
-    "translatedAudioUri": "The translated audio data URI."
+    "translatedText": "The translated text."
   }
   `,
 });
@@ -81,20 +91,22 @@ const voiceTranslationFlow = ai.defineFlow(
       audioDataUri: input.audioDataUri,
     });
 
-    const {output} = await voiceTranslationPrompt({
+    const promptResult = await voiceTranslationPrompt({
       ...input,
       whisperTranscriptionResult,
     });
 
+    const output = promptResult.output;
     if (!output) {
       throw new Error('Translation failed: no output from AI.');
     }
 
-    // Placeholder: Implement translation and audio conversion using appropriate APIs
-    const translatedText = 'This is a placeholder for the translated text.'; // Replace with actual translation
-    const translatedAudioUri = await textToSpeech(translatedText);
+    const translatedAudioUri = await textToSpeech(output.translatedText);
 
-    return {translatedAudioUri};
+    return {
+      translatedAudioUri,
+      translatedText: output.translatedText,
+    };
   }
 );
 

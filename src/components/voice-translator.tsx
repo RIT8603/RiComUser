@@ -20,6 +20,7 @@ export function VoiceTranslator() {
     const [sourceLanguage, setSourceLanguage] = useState('english');
     const [targetLanguage, setTargetLanguage] = useState('hindi');
     const [translationResult, setTranslationResult] = useState<VoiceTranslationOutput | null>(null);
+    const [translatedText, setTranslatedText] = useState('');
     
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -29,6 +30,7 @@ export function VoiceTranslator() {
 
     const handleStartRecording = async () => {
         setTranslationResult(null);
+        setTranslatedText('');
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -54,6 +56,7 @@ export function VoiceTranslator() {
                                 audioDataUri: base64Audio,
                             });
                             setTranslationResult(result);
+                            setTranslatedText(result.translatedText);
                         } catch (e: any) {
                             console.error("Translation failed:", e);
                             toast({
@@ -186,6 +189,12 @@ export function VoiceTranslator() {
                         </Button>
                     </motion.div>
                     <p className="text-muted-foreground h-5">{getStatusText()}</p>
+                    {translatedText && (
+                        <div className="text-center p-4 bg-muted rounded-lg w-full">
+                            <p className="font-semibold">Translated Text:</p>
+                            <p>{translatedText}</p>
+                        </div>
+                    )}
                 </div>
                 <audio ref={audioPlayerRef} className="hidden" />
             </CardContent>
