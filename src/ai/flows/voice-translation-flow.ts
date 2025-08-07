@@ -21,7 +21,7 @@ const VoiceTranslationInputSchema = z.object({
   audioDataUri: z
     .string()
     .describe(
-      "The audio data URI containing the speaker's voice, which must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "The audio data URI containing the speaker's voice, which must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
 });
 export type VoiceTranslationInput = z.infer<typeof VoiceTranslationInputSchema>;
@@ -42,7 +42,7 @@ const TranslationResponseSchema = z.object({
 
 const voiceTranslationPrompt = ai.definePrompt({
   name: 'voiceTranslationPrompt',
-  model: 'googleai/gemini-1.5-flash-preview',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: z.object({
     sourceLanguage: VoiceTranslationInputSchema.shape.sourceLanguage,
     targetLanguage: VoiceTranslationInputSchema.shape.targetLanguage,
