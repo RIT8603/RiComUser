@@ -28,7 +28,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         // Simulate fetching initial data or checking session
-        const adminStatus = typeof window !== 'undefined' && sessionStorage.getItem('isAdmin') === 'true';
+        const adminStatus = typeof window !== 'undefined' && localStorage.getItem('isAdmin') === 'true';
         setIsAdmin(adminStatus);
         
         if (typeof window !== 'undefined') {
@@ -68,7 +68,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const loginAdmin = (email: string, pass: string) => {
         if (email === 'heybody582@gmail.com' && pass === 'Ritesh@@#3') {
             setIsAdmin(true);
-            sessionStorage.setItem('isAdmin', 'true');
+            localStorage.setItem('isAdmin', 'true');
             return true;
         }
         return false;
@@ -76,7 +76,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logoutAdmin = () => {
         setIsAdmin(false);
-        sessionStorage.removeItem('isAdmin');
+        localStorage.removeItem('isAdmin');
     };
 
     return (
