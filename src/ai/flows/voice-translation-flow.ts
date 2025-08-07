@@ -75,7 +75,8 @@ const voiceTranslationPrompt = ai.definePrompt({
   Based on the whisperTranscriptionResult, determine if any parts of the original audio should be included in the translated version to preserve context and nuances. Translate the audio, incorporating these elements as needed.
 
   You MUST return the output in the exact JSON format specified in the output schema.
-  For example:
+  Your entire response must be a single JSON object. Do not include any other text or explanation.
+  Example of the exact output format required:
   {
     "translatedText": "This is the translated text."
   }
@@ -97,7 +98,7 @@ const voiceTranslationFlow = ai.defineFlow(
       ...input,
       whisperTranscriptionResult,
     });
-
+    
     const output = promptResult.output;
     if (!output || !output.translatedText) {
       throw new Error('Translation failed: no text returned from AI.');
