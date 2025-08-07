@@ -104,35 +104,35 @@ export function VoiceTranslator({ sourceLanguage, targetLanguage, onTranslation,
     }
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-4 pt-4">
+        <div className="flex flex-col items-center justify-center space-y-4 py-8">
              <motion.div
-                animate={{ scale: isRecording ? 1.1 : 1 }}
+                animate={{ scale: isRecording ? 1.05 : 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 10, repeat: isRecording ? Infinity : 0, repeatType: 'reverse' }}
             >
                 <Button
                     onClick={toggleRecording}
                     disabled={isLoading}
-                    className="h-24 w-24 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+                    className="h-28 w-28 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
                     aria-label={isRecording ? 'Stop Recording' : 'Start Recording'}
                 >
                     <AnimatePresence mode="wait">
                         {isLoading ? (
                             <motion.div key="loader" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                                <Loader2 className="h-10 w-10 animate-spin" />
+                                <Loader2 className="h-12 w-12 animate-spin" />
                             </motion.div>
                         ) : isRecording ? (
                             <motion.div key="stop" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                                <Square className="h-10 w-10 fill-white" />
+                                <Square className="h-10 w-10 fill-current" />
                             </motion.div>
                         ) : (
                             <motion.div key="mic" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}>
-                                <Mic className="h-10 w-10" />
+                                <Mic className="h-12 w-12" />
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </Button>
             </motion.div>
-            <p className="text-muted-foreground h-5 text-sm">{getStatusText()}</p>
+            <p className="text-muted-foreground h-5 text-sm font-medium">{getStatusText()}</p>
         </div>
     );
 }

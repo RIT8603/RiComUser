@@ -73,7 +73,7 @@ export function TextImageTranslator({ sourceLanguage, targetLanguage, onTranslat
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Enter text to translate..."
-                    className="w-full"
+                    className="w-full bg-secondary border-none"
                     rows={4}
                     disabled={isLoading}
                 />
@@ -111,6 +111,7 @@ export function TextImageTranslator({ sourceLanguage, targetLanguage, onTranslat
                 <Button 
                     onClick={handleTranslate}
                     disabled={isLoading}
+                    variant="default"
                 >
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                     Translate

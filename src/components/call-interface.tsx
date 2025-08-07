@@ -73,10 +73,10 @@ const UserPanel = ({
   }
 
   return (
-    <div className="flex-1 p-4 bg-card rounded-xl shadow-md space-y-4 border">
+    <div className="flex-1 p-6 bg-card rounded-xl shadow-sm space-y-6 border">
       <h3 className="font-semibold text-xl text-center text-primary">{userLabel}</h3>
       <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
-        <SelectTrigger>
+        <SelectTrigger className="bg-secondary border-none">
           <SelectValue placeholder="Select language" />
         </SelectTrigger>
         <SelectContent>
@@ -87,9 +87,9 @@ const UserPanel = ({
       </Select>
 
       <Tabs defaultValue="voice">
-        <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="voice">Voice</TabsTrigger>
-            <TabsTrigger value="text-image">Text/Image</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 bg-secondary">
+            <TabsTrigger value="voice" className="data-[state=active]:bg-card data-[state=active]:shadow-sm">Voice</TabsTrigger>
+            <TabsTrigger value="text-image" className="data-[state=active]:bg-card data-[state=active]:shadow-sm">Text/Image</TabsTrigger>
         </TabsList>
         <TabsContent value="voice">
             <VoiceTranslator 
@@ -110,7 +110,7 @@ const UserPanel = ({
       </Tabs>
 
       {translatedText && (
-        <div className="text-center p-3 bg-muted rounded-lg w-full min-h-[80px]">
+        <div className="text-center p-3 bg-secondary rounded-lg w-full min-h-[80px]">
             <div className="flex justify-between items-center">
               <p className="font-semibold text-left text-foreground">Translation:</p>
               {translatedAudioUri && (
@@ -170,12 +170,12 @@ export function CallInterface() {
     };
 
     return (
-        <Card className="w-full max-w-4xl shadow-2xl rounded-2xl bg-background border-none">
-            <CardHeader className="text-center">
-                <CardTitle className="text-4xl font-headline font-bold text-primary">RIComUser</CardTitle>
+        <Card className="w-full max-w-5xl shadow-xl rounded-2xl bg-card border">
+            <CardHeader className="text-center pb-2">
+                <CardTitle className="text-4xl font-bold text-primary">RIComUser</CardTitle>
                 <CardDescription className="text-lg text-muted-foreground">Real-time Bilingual Communication</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-4 sm:p-6 md:p-8">
                 <div className="flex items-start justify-center gap-4 md:gap-8 flex-col md:flex-row">
                     <UserPanel 
                       userLabel="User 1"
@@ -188,8 +188,8 @@ export function CallInterface() {
                       onTextImageTranslation={handleUser2TextImageTranslation}
                     />
 
-                    <div className="flex items-center justify-center pt-20">
-                      <Button variant="ghost" size="icon" onClick={swapLanguages} aria-label="Swap languages" className="rounded-full bg-card hover:bg-muted">
+                    <div className="flex items-center justify-center pt-28">
+                      <Button variant="ghost" size="icon" onClick={swapLanguages} aria-label="Swap languages" className="rounded-full bg-secondary hover:bg-muted">
                           <ArrowRightLeft className="h-6 w-6 text-primary" />
                       </Button>
                     </div>
