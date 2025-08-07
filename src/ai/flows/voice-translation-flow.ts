@@ -39,15 +39,13 @@ const whisperTool = ai.defineTool(
   {
     name: 'whisperTranscription',
     description: 'Transcribes audio data to text to help determine parts of the original voice that need to be included in the translated version to preserve context and nuances.',
-    inputSchema: z.object({
-      audioDataUri: z.string().describe('The audio data URI to transcribe.'),
-    }),
+    inputSchema: z.string(),
     outputSchema: z.string(),
   },
-  async (input) => {
+  async (audioDataUri) => {
     // Placeholder implementation for Whisper transcription
     // In a real application, this would call the Whisper API
-    console.log('Running whisperTool with input', input);
+    console.log('Running whisperTool with input audioDataUri');
     return `Whisper transcription of the audio data.`;
   }
 );
@@ -72,10 +70,11 @@ const voiceTranslationPrompt = ai.definePrompt({
   {{whisperTranscriptionResult}}
 
   Based on the whisperTranscriptionResult, determine if any parts of the original audio should be included in the translated version to preserve context and nuances. Translate the audio, incorporating these elements as needed.
-  
-  You MUST return the output in the following JSON format:
+
+  You MUST return the output in the exact JSON format specified in the output schema.
+  For example:
   {
-    "translatedText": "The translated text."
+    "translatedText": "This is the translated text."
   }
   `,
 });
@@ -86,10 +85,10 @@ const voiceTranslationFlow = ai.defineFlow(
     inputSchema: VoiceTranslationInputSchema,
     outputSchema: VoiceTranslationOutputSchema,
   },
-  async input => {
-    const whisperTranscriptionResult = await whisperTool({
-      audioDataUri: input.audioDataUri,
-    });
+  async (input) => {
+    const whisperTranscriptionResult = await whisperTool(
+      input.audioDataUri,
+    );
 
     const promptResult = await voiceTranslationPrompt({
       ...input,
@@ -97,10 +96,10 @@ const voiceTranslationFlow = ai.defineFlow(
     });
 
     const output = promptResult.output;
-    if (!output) {
-      throw new Error('Translation failed: no output from AI.');
+    if (!output || !output.translatedText) {
+      throw new Error('Translation failed: no text returned from AI.');
     }
-
+    
     const translatedAudioUri = await textToSpeech(output.translatedText);
 
     return {
