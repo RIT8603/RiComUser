@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -39,10 +40,12 @@ const whisperTool = ai.defineTool(
   {
     name: 'whisperTranscription',
     description: 'Transcribes audio data to text to help determine parts of the original voice that need to be included in the translated version to preserve context and nuances.',
-    inputSchema: z.string(),
+    inputSchema: z.object({
+      audioDataUri: z.string().describe('The audio data URI to transcribe.'),
+    }),
     outputSchema: z.string(),
   },
-  async (audioDataUri) => {
+  async ({ audioDataUri }) => {
     // Placeholder implementation for Whisper transcription
     // In a real application, this would call the Whisper API
     console.log('Running whisperTool with input audioDataUri');
@@ -86,9 +89,9 @@ const voiceTranslationFlow = ai.defineFlow(
     outputSchema: VoiceTranslationOutputSchema,
   },
   async (input) => {
-    const whisperTranscriptionResult = await whisperTool(
-      input.audioDataUri,
-    );
+    const whisperTranscriptionResult = await whisperTool({
+      audioDataUri: input.audioDataUri,
+    });
 
     const promptResult = await voiceTranslationPrompt({
       ...input,
