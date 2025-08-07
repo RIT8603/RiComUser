@@ -20,7 +20,7 @@ const VoiceTranslationInputSchema = z.object({
   audioDataUri: z
     .string()
     .describe(
-      'The audio data URI containing the speaker\'s voice in PCM format, which must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' // Corrected description
+      "The audio data URI containing the speaker's voice in PCM format, which must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type VoiceTranslationInput = z.infer<typeof VoiceTranslationInputSchema>;
@@ -62,9 +62,12 @@ const voiceTranslationPrompt = ai.definePrompt({
   {{whisperTranscriptionResult}}
 
   Based on the whisperTranscriptionResult, determine if any parts of the original audio should be included in the translated version to preserve context and nuances. Translate the audio, incorporating these elements as needed.
-
-  Return the translated audio in a format suitable for playback.
-  `, // Updated prompt
+  
+  You MUST return the output in the following JSON format:
+  {
+    "translatedAudioUri": "The translated audio data URI."
+  }
+  `,
 });
 
 const voiceTranslationFlow = ai.defineFlow(
@@ -78,10 +81,14 @@ const voiceTranslationFlow = ai.defineFlow(
       audioDataUri: input.audioDataUri,
     });
 
-    const promptResult = await voiceTranslationPrompt({
+    const {output} = await voiceTranslationPrompt({
       ...input,
       whisperTranscriptionResult,
     });
+
+    if (!output) {
+      throw new Error('Translation failed: no output from AI.');
+    }
 
     // Placeholder: Implement translation and audio conversion using appropriate APIs
     const translatedText = 'This is a placeholder for the translated text.'; // Replace with actual translation
