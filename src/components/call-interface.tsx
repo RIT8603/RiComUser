@@ -73,8 +73,8 @@ const UserPanel = ({
   }
 
   return (
-    <div className="flex-1 p-4 border rounded-lg space-y-4">
-      <h3 className="font-semibold text-lg">{userLabel}</h3>
+    <div className="flex-1 p-4 bg-card rounded-xl shadow-md space-y-4 border">
+      <h3 className="font-semibold text-xl text-center text-primary">{userLabel}</h3>
       <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
         <SelectTrigger>
           <SelectValue placeholder="Select language" />
@@ -110,16 +110,16 @@ const UserPanel = ({
       </Tabs>
 
       {translatedText && (
-        <div className="text-center p-3 bg-muted rounded-lg w-full">
+        <div className="text-center p-3 bg-muted rounded-lg w-full min-h-[80px]">
             <div className="flex justify-between items-center">
-              <p className="font-semibold text-left">Translated Text:</p>
+              <p className="font-semibold text-left text-foreground">Translation:</p>
               {translatedAudioUri && (
                 <Button onClick={playAudio} variant="ghost" size="icon" disabled={!translatedAudioUri}>
                     <Volume2 className="h-5 w-5" />
                 </Button>
               )}
             </div>
-            <p className="text-sm text-left">{translatedText}</p>
+            <p className="text-sm text-left text-muted-foreground">{translatedText}</p>
         </div>
       )}
       <audio ref={audioPlayerRef} className="hidden" />
@@ -170,10 +170,10 @@ export function CallInterface() {
     };
 
     return (
-        <Card className="w-full max-w-4xl shadow-2xl rounded-2xl">
+        <Card className="w-full max-w-4xl shadow-2xl rounded-2xl bg-background border-none">
             <CardHeader className="text-center">
-                <CardTitle className="text-4xl font-headline font-bold text-primary">LinguaLive</CardTitle>
-                <CardDescription className="text-lg">Real-time Bilingual Communication</CardDescription>
+                <CardTitle className="text-4xl font-headline font-bold text-primary">RIComUser</CardTitle>
+                <CardDescription className="text-lg text-muted-foreground">Real-time Bilingual Communication</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex items-start justify-center gap-4 md:gap-8 flex-col md:flex-row">
@@ -189,8 +189,8 @@ export function CallInterface() {
                     />
 
                     <div className="flex items-center justify-center pt-20">
-                      <Button variant="ghost" size="icon" onClick={swapLanguages} aria-label="Swap languages">
-                          <ArrowRightLeft className="h-6 w-6 text-muted-foreground" />
+                      <Button variant="ghost" size="icon" onClick={swapLanguages} aria-label="Swap languages" className="rounded-full bg-card hover:bg-muted">
+                          <ArrowRightLeft className="h-6 w-6 text-primary" />
                       </Button>
                     </div>
 
