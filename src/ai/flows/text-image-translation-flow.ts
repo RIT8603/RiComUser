@@ -5,7 +5,7 @@
  * @fileOverview This file defines a Genkit flow for text and image-based translation.
  *
  * It translates text from a source language to a target language, optionally using an
- * image as additional context.
+ * image as additional context. If no text is provided, it extracts text from the image for translation.
  *
  * - textImageTranslation - A function that handles the text/image translation process.
  * - TextImageTranslationInput - The input type for the textImageTranslation function.
@@ -42,20 +42,28 @@ const textImageTranslationPrompt = ai.definePrompt({
   model: 'googleai/gemini-1.5-flash',
   input: {schema: TextImageTranslationInputSchema},
   output: {schema: TextImageTranslationOutputSchema},
-  prompt: `You are an expert translator. Your task is to translate the given text from {{{sourceLanguage}}} to {{{targetLanguage}}}.
-  {{#if imageDataUri}}
-  An image has been provided as context. Use the visual information from the image to improve the accuracy and context of the translation.
-  Image: {{media url=imageDataUri}}
-  {{/if}}
+  prompt: `You are an expert translator. Your task is to translate content from {{{sourceLanguage}}} to {{{targetLanguage}}}.
 
-  Text to translate: "{{{text}}}"
+{{#if imageDataUri}}
+You have been given an image.
+Image: {{media url=imageDataUri}}
+{{/if}}
 
-  You MUST return the output in the exact JSON format specified in the output schema.
-  Your entire response must be a single JSON object. Do not include any other text or explanation.
-  Example of the exact output format required:
-  {
-    "translatedText": "This is the translated text."
-  }
+{{#if text}}
+You have also been given text.
+Text to translate: "{{{text}}}"
+
+If you have both an image and text, use the image as the primary context to translate the given text.
+{{else}}
+If you have only been given an image, your task is to first extract any text visible in the image and then translate that extracted text.
+{{/if}}
+
+You MUST return the output in the exact JSON format specified in the output schema.
+Your entire response must be a single JSON object. Do not include any other text or explanation.
+Example of the exact output format required:
+{
+  "translatedText": "This is the translated text."
+}
   `,
 });
 
@@ -67,7 +75,7 @@ const textImageTranslationFlow = ai.defineFlow(
     outputSchema: TextImageTranslationOutputSchema,
   },
   async (input) => {
-    if (!input.text.trim()) {
+    if (!input.text.trim() && !input.imageDataUri) {
         return { translatedText: '' };
     }
     const promptResult = await textImageTranslationPrompt(input);
