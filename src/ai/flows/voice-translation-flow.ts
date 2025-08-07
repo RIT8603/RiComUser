@@ -54,7 +54,7 @@ const voiceTranslationPrompt = ai.definePrompt({
   The audio input is provided in the following data URI:
   {{media url=audioDataUri}}
 
-  First, transcribe the audio to text. Then, translate the transcribed text from {{{sourceLanguage}}} to {{{targetLanguage}}}.
+  First, transcribe the audio to text. If you cannot reliably transcribe the audio, your response for "translatedText" should be "I could not hear any audio, please try again.". Otherwise, translate the transcribed text from {{{sourceLanguage}}} to {{{targetLanguage}}}.
 
   You MUST return the output in the exact JSON format specified in the output schema.
   Your entire response must be a single JSON object. Do not include any other text or explanation.
@@ -89,6 +89,10 @@ const voiceTranslationFlow = ai.defineFlow(
 );
 
 async function textToSpeech(text: string): Promise<string> {
+  if (text.trim() === "I could not hear any audio, please try again.") {
+    // We don't want to convert our own error message to speech
+    return "";
+  }
   const { media } = await ai.generate({
     model: 'googleai/gemini-2.5-flash-preview-tts',
     config: {

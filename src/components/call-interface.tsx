@@ -58,7 +58,7 @@ const UserPanel = ({
   }, [translatedAudioUri, toast]);
 
   const playAudio = () => {
-    if (audioPlayerRef.current) {
+    if (audioPlayerRef.current && translatedAudioUri) {
       audioPlayerRef.current.play().catch(e => console.error("Audio playback failed:", e));
     }
   }
