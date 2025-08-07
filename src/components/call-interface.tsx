@@ -18,6 +18,9 @@ const languages = [
     { value: 'german', label: 'German' },
     { value: 'chinese', label: 'Chinese' },
     { value: 'japanese', label: 'Japanese' },
+    { value: 'tamil', label: 'Tamil' },
+    { value: 'marathi', label: 'Marathi' },
+    { value: 'kannada', label: 'Kannada' },
 ];
 
 const UserPanel = ({
