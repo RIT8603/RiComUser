@@ -119,4 +119,3 @@ export function TextImageTranslator({ sourceLanguage, targetLanguage, onTranslat
         </div>
     );
 }
-
