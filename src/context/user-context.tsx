@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -27,31 +28,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         // Simulate fetching initial data or checking session
-        const adminStatus = sessionStorage.getItem('isAdmin') === 'true';
+        const adminStatus = typeof window !== 'undefined' && sessionStorage.getItem('isAdmin') === 'true';
         setIsAdmin(adminStatus);
         
-        const storedUsers = sessionStorage.getItem('users');
-        if (storedUsers) {
-            setUsers(JSON.parse(storedUsers));
+        if (typeof window !== 'undefined') {
+            const storedUsers = sessionStorage.getItem('users');
+            if (storedUsers) {
+                setUsers(JSON.parse(storedUsers));
+            }
         }
-
+        
         // Simulate unique visitor count
-        const visitorCount = localStorage.getItem('uniqueVisitors');
-        if (visitorCount) {
-            setUniqueVisitors(parseInt(visitorCount, 10));
-        } else {
-            const newCount = 1;
-            setUniqueVisitors(newCount);
-            localStorage.setItem('uniqueVisitors', newCount.toString());
-        }
+        if (typeof window !== 'undefined') {
+            const visitorCount = localStorage.getItem('uniqueVisitors');
+            const sessionVisited = sessionStorage.getItem('sessionVisited');
 
-        // This is a simplified way to increment for new "sessions"
-        const sessionVisited = sessionStorage.getItem('sessionVisited');
-        if (!sessionVisited) {
-            const newCount = (visitorCount ? parseInt(visitorCount, 10) : 0) + 1;
-            setUniqueVisitors(newCount);
-            localStorage.setItem('uniqueVisitors', newCount.toString());
-            sessionStorage.setItem('sessionVisited', 'true');
+            if (!sessionVisited) {
+                const currentCount = visitorCount ? parseInt(visitorCount, 10) : 0;
+                const newCount = currentCount + 1;
+                setUniqueVisitors(newCount);
+                localStorage.setItem('uniqueVisitors', newCount.toString());
+                sessionStorage.setItem('sessionVisited', 'true');
+            } else {
+                 setUniqueVisitors(parseInt(visitorCount || '0', 10));
+            }
         }
 
     }, []);
@@ -59,7 +59,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const addUser = (user: User) => {
         const newUsers = [...users, user];
         setUsers(newUsers);
+        // This user list is temporary for the session
         sessionStorage.setItem('users', JSON.stringify(newUsers));
+        // Mark that this user has registered in their browser forever
+        localStorage.setItem('hasRegistered', 'true');
     };
 
     const loginAdmin = (email: string, pass: string) => {
