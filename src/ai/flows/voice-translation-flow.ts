@@ -42,6 +42,7 @@ const TranslationResponseSchema = z.object({
 
 const voiceTranslationPrompt = ai.definePrompt({
   name: 'voiceTranslationPrompt',
+  model: 'googleai/gemini-pro',
   input: {schema: z.object({
     sourceLanguage: VoiceTranslationInputSchema.shape.sourceLanguage,
     targetLanguage: VoiceTranslationInputSchema.shape.targetLanguage,
