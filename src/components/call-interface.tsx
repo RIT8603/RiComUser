@@ -4,11 +4,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowRightLeft, Volume2 } from 'lucide-react';
 import { VoiceTranslationOutput } from '@/ai/flows/voice-translation-flow';
+import { TextImageTranslationOutput } from '@/ai/flows/text-image-translation-flow';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { VoiceTranslator } from './voice-translator';
+import { TextImageTranslator } from './text-image-translator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const languages = [
     { value: 'english', label: 'English' },
@@ -28,20 +31,26 @@ const UserPanel = ({
   sourceLanguage,
   setSourceLanguage,
   targetLanguage,
-  translatedText,
-  translatedAudioUri,
-  onTranslation,
+  voiceTranslationResult,
+  textTranslationResult,
+  onVoiceTranslation,
+  onTextImageTranslation,
 }: {
   userLabel: string;
   sourceLanguage: string;
   setSourceLanguage: (lang: string) => void;
   targetLanguage: string;
-  translatedText: string;
-  translatedAudioUri: string | null;
-  onTranslation: (result: VoiceTranslationOutput) => void;
+  voiceTranslationResult: VoiceTranslationOutput | null;
+  textTranslationResult: TextImageTranslationOutput | null;
+  onVoiceTranslation: (result: VoiceTranslationOutput) => void;
+  onTextImageTranslation: (result: TextImageTranslationOutput) => void;
 }) => {
   const audioPlayerRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
+
+  const translatedText = textTranslationResult?.translatedText || voiceTranslationResult?.translatedText || '';
+  const translatedAudioUri = voiceTranslationResult?.translatedAudioUri || null;
+
 
   useEffect(() => {
     if (translatedAudioUri && audioPlayerRef.current) {
@@ -76,19 +85,39 @@ const UserPanel = ({
           ))}
         </SelectContent>
       </Select>
-      <VoiceTranslator 
-        sourceLanguage={sourceLanguage}
-        targetLanguage={targetLanguage}
-        onTranslation={onTranslation}
-        instance={userLabel}
-      />
+
+      <Tabs defaultValue="voice">
+        <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="voice">Voice</TabsTrigger>
+            <TabsTrigger value="text-image">Text/Image</TabsTrigger>
+        </TabsList>
+        <TabsContent value="voice">
+            <VoiceTranslator 
+                sourceLanguage={sourceLanguage}
+                targetLanguage={targetLanguage}
+                onTranslation={onVoiceTranslation}
+                instance={userLabel}
+            />
+        </TabsContent>
+        <TabsContent value="text-image">
+            <TextImageTranslator
+                 sourceLanguage={sourceLanguage}
+                 targetLanguage={targetLanguage}
+                 onTranslation={onTextImageTranslation}
+                 instance={`${userLabel}-text`}
+            />
+        </TabsContent>
+      </Tabs>
+
       {translatedText && (
         <div className="text-center p-3 bg-muted rounded-lg w-full">
             <div className="flex justify-between items-center">
               <p className="font-semibold text-left">Translated Text:</p>
-              <Button onClick={playAudio} variant="ghost" size="icon" disabled={!translatedAudioUri}>
-                  <Volume2 className="h-5 w-5" />
-              </Button>
+              {translatedAudioUri && (
+                <Button onClick={playAudio} variant="ghost" size="icon" disabled={!translatedAudioUri}>
+                    <Volume2 className="h-5 w-5" />
+                </Button>
+              )}
             </div>
             <p className="text-sm text-left">{translatedText}</p>
         </div>
@@ -103,30 +132,48 @@ export function CallInterface() {
     const [user1Lang, setUser1Lang] = useState('english');
     const [user2Lang, setUser2Lang] = useState('hindi');
 
-    const [user1Translation, setUser1Translation] = useState<VoiceTranslationOutput | null>(null);
-    const [user2Translation, setUser2Translation] = useState<VoiceTranslationOutput | null>(null);
+    const [user1VoiceTranslation, setUser1VoiceTranslation] = useState<VoiceTranslationOutput | null>(null);
+    const [user2VoiceTranslation, setUser2VoiceTranslation] = useState<VoiceTranslationOutput | null>(null);
 
-    const handleUser1Translation = (result: VoiceTranslationOutput) => {
-        setUser2Translation(result); // User 1 speaks, User 2 hears translation
+    const [user1TextTranslation, setUser1TextTranslation] = useState<TextImageTranslationOutput | null>(null);
+    const [user2TextTranslation, setUser2TextTranslation] = useState<TextImageTranslationOutput | null>(null);
+
+    const handleUser1VoiceTranslation = (result: VoiceTranslationOutput) => {
+        setUser2VoiceTranslation(result);
+        setUser2TextTranslation(null);
     };
 
-    const handleUser2Translation = (result: VoiceTranslationOutput) => {
-        setUser1Translation(result); // User 2 speaks, User 1 hears translation
+    const handleUser2VoiceTranslation = (result: VoiceTranslationOutput) => {
+        setUser1VoiceTranslation(result);
+        setUser1TextTranslation(null);
     };
+
+    const handleUser1TextImageTranslation = (result: TextImageTranslationOutput) => {
+        setUser2TextTranslation(result);
+        setUser2VoiceTranslation(null);
+    };
+
+    const handleUser2TextImageTranslation = (result: TextImageTranslationOutput) => {
+        setUser1TextTranslation(result);
+        setUser1VoiceTranslation(null);
+    };
+
 
     const swapLanguages = () => {
         const tempLang = user1Lang;
         setUser1Lang(user2Lang);
         setUser2Lang(tempLang);
-        setUser1Translation(null);
-        setUser2Translation(null);
+        setUser1VoiceTranslation(null);
+        setUser2VoiceTranslation(null);
+        setUser1TextTranslation(null);
+        setUser2TextTranslation(null);
     };
 
     return (
         <Card className="w-full max-w-4xl shadow-2xl rounded-2xl">
             <CardHeader className="text-center">
                 <CardTitle className="text-4xl font-headline font-bold text-primary">LinguaLive</CardTitle>
-                <CardDescription className="text-lg">Real-time Bilingual Voice Call</CardDescription>
+                <CardDescription className="text-lg">Real-time Bilingual Communication</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex items-start justify-center gap-4 md:gap-8 flex-col md:flex-row">
@@ -135,9 +182,10 @@ export function CallInterface() {
                       sourceLanguage={user1Lang}
                       setSourceLanguage={setUser1Lang}
                       targetLanguage={user2Lang}
-                      translatedText={user1Translation?.translatedText || ''}
-                      translatedAudioUri={user1Translation?.translatedAudioUri || null}
-                      onTranslation={handleUser2Translation}
+                      voiceTranslationResult={user1VoiceTranslation}
+                      textTranslationResult={user1TextTranslation}
+                      onVoiceTranslation={handleUser2VoiceTranslation}
+                      onTextImageTranslation={handleUser2TextImageTranslation}
                     />
 
                     <div className="flex items-center justify-center pt-20">
@@ -151,9 +199,10 @@ export function CallInterface() {
                       sourceLanguage={user2Lang}
                       setSourceLanguage={setUser2Lang}
                       targetLanguage={user1Lang}
-                      translatedText={user2Translation?.translatedText || ''}
-                      translatedAudioUri={user2Translation?.translatedAudioUri || null}
-                      onTranslation={handleUser1Translation}
+                      voiceTranslationResult={user2VoiceTranslation}
+                      textTranslationResult={user2TextTranslation}
+                      onVoiceTranslation={handleUser1VoiceTranslation}
+                      onTextImageTranslation={handleUser1TextImageTranslation}
                     />
                 </div>
             </CardContent>
