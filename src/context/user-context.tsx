@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAdmin(adminStatus);
         
         if (typeof window !== 'undefined') {
-            const storedUsers = sessionStorage.getItem('users');
+            const storedUsers = localStorage.getItem('users');
             if (storedUsers) {
                 setUsers(JSON.parse(storedUsers));
             }
@@ -59,8 +59,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const addUser = (user: User) => {
         const newUsers = [...users, user];
         setUsers(newUsers);
-        // This user list is temporary for the session
-        sessionStorage.setItem('users', JSON.stringify(newUsers));
+        // This user list is now persistent in the browser
+        localStorage.setItem('users', JSON.stringify(newUsers));
         // Mark that this user has registered in their browser forever
         localStorage.setItem('hasRegistered', 'true');
     };
