@@ -34,20 +34,22 @@ export async function voiceTranslation(input: VoiceTranslationInput): Promise<Vo
   return voiceTranslationFlow(input);
 }
 
-const whisperTool = ai.defineTool({
-  name: 'whisperTranscription',
-  description: 'Transcribes audio data to text to help determine parts of the original voice that need to be included in the translated version to preserve context and nuances.',
-  inputSchema: z.object({
-    audioDataUri: z.string().describe('The audio data URI to transcribe.'),
-  }),
-  outputSchema: z.string(),
-  async resolve(input) {
+const whisperTool = ai.defineTool(
+  {
+    name: 'whisperTranscription',
+    description: 'Transcribes audio data to text to help determine parts of the original voice that need to be included in the translated version to preserve context and nuances.',
+    inputSchema: z.object({
+      audioDataUri: z.string().describe('The audio data URI to transcribe.'),
+    }),
+    outputSchema: z.string(),
+  },
+  async (input) => {
     // Placeholder implementation for Whisper transcription
     // In a real application, this would call the Whisper API
     console.log('Running whisperTool with input', input);
     return `Whisper transcription of the audio data.`;
-  },
-});
+  }
+);
 
 const voiceTranslationPrompt = ai.definePrompt({
   name: 'voiceTranslationPrompt',
