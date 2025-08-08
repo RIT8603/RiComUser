@@ -20,28 +20,16 @@ Built using **prompt engineering** and **strong coding skills**, it supports **v
 ---
 
 ## 🛠 Tech Stack
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Node.js / Python (based on your tech stack)
-- **APIs:** Translation & Speech Recognition APIs
+- **Framework:** Next.js (React-based)
+- **Styling:** Tailwind CSS
+- **Language:** TypeScript
+- **API Integration:** Google Gemini API (for AI-powered translation & processing)
+- **Package Manager:** npm
+- **Configuration:** PostCSS, App Hosting YAML
 - **Other Tools:** Prompt Engineering, Real-time Communication Libraries
+
 
 ---
 
 ## 📸 Screenshot
 ![RiComUser Screenshot](screenshot.png)
-
----
-
-## 📦 Installation
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/RiComUser.git
-
-# Navigate into the project directory
-cd RiComUser
-
-# Install dependencies
-npm install   # or pip install -r requirements.txt (if Python backend)
-
-# Start the development server
-npm start     # or python app.py
