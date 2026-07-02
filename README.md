@@ -5,8 +5,9 @@
 RiComUser is a **real-time bilingual communication platform** that allows two users speaking different languages to connect instantly.  
 Built using **prompt engineering** and **strong coding skills**, it supports **voice, text, and image translation** to make conversations effortless and natural.
 
-🌐 **Live Website:** [Click here to try RiComUser](https://your-website-link.com)
-
+```
+🌐 **Live Website:**
+```
 ---
 
 ## 🚀 Features
